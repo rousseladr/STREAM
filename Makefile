@@ -1,5 +1,9 @@
 CC = gcc
-CFLAGS = -O2 -fopenmp
+CFLAGS = -Ofast -march=native -fopenmp -mcmodel=large -fno-PIC
+#CFLAGS = -O0 -g -march=native -fopenmp -mcmodel=large -fno-PIC
+CFLAGS_MILAN = -DSTREAM_ARRAY_SIZE=260000000
+CFLAGS_GH200 = -DSTREAM_ARRAY_SIZE=240000000 -DCUSTOM_ALLOC
+CFLAGS_MI300A = -DSTREAM_ARRAY_SIZE=195000000
 
 FC = gfortran
 FFLAGS = -O2 -fopenmp
@@ -11,11 +15,20 @@ stream_f.exe: stream.f mysecond.o
 	$(FC) $(FFLAGS) -c stream.f
 	$(FC) $(FFLAGS) stream.o mysecond.o -o stream_f.exe
 
+stream_c.milan: stream.c
+	$(CC) $(CFLAGS) $(CFLAGS_MILAN) -DNTIMES=200 -DSTREAM_TYPE=double stream.c -o $@
+
+stream_c.gh200: stream.c
+	$(CC) $(CFLAGS) $(CFLAGS_GH200) -DNTIMES=200 -DSTREAM_TYPE=double stream.c -o $@
+
+stream_c.mi300a: stream.c
+	$(CC) $(CFLAGS) $(CFLAGS_MI300A) -DNTIMES=200 -DSTREAM_TYPE=double stream.c -o $@
+
 stream_c.exe: stream.c
-	$(CC) $(CFLAGS) stream.c -o stream_c.exe
+	$(CC) $(CFLAGS) $(CFLAGS_MILAN) -DNTIMES=200 -DSTREAM_TYPE=double stream.c -o stream_c.exe
 
 clean:
-	rm -f stream_f.exe stream_c.exe *.o
+	rm -f stream_f.exe stream_c.* *.o
 
 # an example of a more complex build line for the Intel icc compiler
 stream.icc: stream.c

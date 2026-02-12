@@ -176,9 +176,16 @@
 #define STREAM_TYPE double
 #endif
 
+#ifndef CUSTOM_ALLOC
 static STREAM_TYPE	a[STREAM_ARRAY_SIZE+OFFSET],
 			b[STREAM_ARRAY_SIZE+OFFSET],
 			c[STREAM_ARRAY_SIZE+OFFSET];
+#else
+#include <stdlib.h>
+static STREAM_TYPE	*a = NULL;
+static STREAM_TYPE	*b = NULL;
+static STREAM_TYPE	*c = NULL;
+#endif
 
 static double	avgtime[4] = {0}, maxtime[4] = {0},
 		mintime[4] = {FLT_MAX,FLT_MAX,FLT_MAX,FLT_MAX};
@@ -215,6 +222,11 @@ main()
     double		t, times[4][NTIMES];
 
     /* --- SETUP --- determine precision and check timing --- */
+#ifdef CUSTOM_ALLOC
+    a = (STREAM_TYPE*)malloc(sizeof(double)*(STREAM_ARRAY_SIZE+OFFSET));
+    b = (STREAM_TYPE*)malloc(sizeof(double)*(STREAM_ARRAY_SIZE+OFFSET));
+    c = (STREAM_TYPE*)malloc(sizeof(double)*(STREAM_ARRAY_SIZE+OFFSET));
+#endif
 
     printf(HLINE);
     printf("STREAM version $Revision: 5.10 $\n");
@@ -375,6 +387,11 @@ main()
     checkSTREAMresults();
     printf(HLINE);
 
+#ifdef CUSTOM_ALLOC
+    free(a);
+    free(b);
+    free(c);
+#endif
     return 0;
 }
 
