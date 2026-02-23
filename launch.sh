@@ -10,7 +10,8 @@ echo -e "Thread\tBandwidth\tAvgTime\tMinTime\tMaxTime" >& `hostname`"_scale.csv"
 echo -e "Thread\tBandwidth\tAvgTime\tMinTime\tMaxTime" >& `hostname`"_add.csv"
 echo -e "Thread\tBandwidth\tAvgTime\tMinTime\tMaxTime" >& `hostname`"_triad.csv"
 
-for i in `seq 1 288`
+num_pu=$(grep -c "^processor" /proc/cpuinfo)
+for i in `seq 1 $num_pu`
 do
 
 export OMP_PLACES={0:$i:1}
@@ -21,7 +22,7 @@ export OMP_NUM_THREADS=$i
 fichier=`hostname`"_stream_$i.log"
 
 # Running stream
-../stream_c.exe >& $fichier 
+./stream_c.exe >& $fichier 
 
 # Initialiser des tableaux associatifs pour chaque mot-clé (Bash 4+)
 declare -A Copy
