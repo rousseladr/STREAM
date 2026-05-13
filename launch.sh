@@ -10,7 +10,10 @@ echo -e "Thread\tBandwidth\tAvgTime\tMinTime\tMaxTime" >& `hostname`"_scale.csv"
 echo -e "Thread\tBandwidth\tAvgTime\tMinTime\tMaxTime" >& `hostname`"_add.csv"
 echo -e "Thread\tBandwidth\tAvgTime\tMinTime\tMaxTime" >& `hostname`"_triad.csv"
 
-num_pu=$(grep -c "^processor" /proc/cpuinfo)
+cores_per_socket=$(lscpu | grep -E "^Core\(s\) per socket:" | awk '{print $4}')
+sockets=$(lscpu | grep -E "^Socket\(s\):" | awk '{print $2}')
+num_pu=$((cores_per_socket * sockets))
+#num_pu=$(grep -c "^processor" /proc/cpuinfo)
 for i in `seq 1 $num_pu`
 do
 
